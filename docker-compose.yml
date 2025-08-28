@@ -1,0 +1,62 @@
+version: "3.9"
+
+services:
+  mariadb:
+    image: mariadb:11
+    container_name: "${PROJECT_NAME}-auth-mariadb"
+    ports:
+      - "${DB_PORT}:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      MYSQL_DATABASE: ${DB_NAME}
+      MYSQL_USER: ${DB_USERNAME}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - "${PROJECT_NAME}_mariadb_data:/var/lib/mysql"
+      - ./db/mariadb/init-db.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - backend
+    profiles:
+      - mariadb
+
+  postgresql:
+    image: postgres:16
+    container_name: "${PROJECT_NAME}-auth-postgresql"
+    ports:
+      - "${DB_PORT}:5432"
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - "${PROJECT_NAME}_postgresql_data:/var/lib/postgresql/data"
+      - ./db/postgresql/init-db.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - backend
+    profiles:
+      - postgresql
+
+  mongodb:
+    image: mongo:7
+    container_name: "${PROJECT_NAME}-auth-mongodb"
+    ports:
+      - "${DB_PORT}:27017"
+    environment:
+      MONGO_INITDB_DATABASE: ${DB_NAME}
+      MONGO_INITDB_ROOT_USERNAME: ${DB_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - "${PROJECT_NAME}_mongodb_data:/data/db"
+      - ./db/mongodb/init.js:/docker-entrypoint-initdb.d/init.js
+    networks:
+      - backend
+    profiles:
+      - mongodb
+
+volumes:
+  "${PROJECT_NAME}_mariadb_data":
+  "${PROJECT_NAME}_postgresql_data":
+  "${PROJECT_NAME}_mongodb_data":
+
+networks:
+  backend:
