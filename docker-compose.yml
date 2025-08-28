@@ -1,4 +1,5 @@
 version: "3.9"
+#레거시 호환을 위한 버전
 
 services:
   mariadb:
@@ -9,10 +10,8 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
       MYSQL_DATABASE: ${DB_NAME}
-      MYSQL_USER: ${DB_USERNAME}
-      MYSQL_PASSWORD: ${DB_PASSWORD}
     volumes:
-      - "${PROJECT_NAME}_mariadb_data:/var/lib/mysql"
+      - mariadb_data:/var/lib/mysql
       - ./db/mariadb/init-db.sql:/docker-entrypoint-initdb.d/init.sql
     networks:
       - backend
@@ -26,10 +25,9 @@ services:
       - "${DB_PORT}:5432"
     environment:
       POSTGRES_DB: ${DB_NAME}
-      POSTGRES_USER: ${DB_USERNAME}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
     volumes:
-      - "${PROJECT_NAME}_postgresql_data:/var/lib/postgresql/data"
+      - postgresql_data:/var/lib/postgresql/data
       - ./db/postgresql/init-db.sql:/docker-entrypoint-initdb.d/init.sql
     networks:
       - backend
@@ -43,10 +41,10 @@ services:
       - "${DB_PORT}:27017"
     environment:
       MONGO_INITDB_DATABASE: ${DB_NAME}
-      MONGO_INITDB_ROOT_USERNAME: ${DB_USERNAME}
+      MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: ${DB_PASSWORD}
     volumes:
-      - "${PROJECT_NAME}_mongodb_data:/data/db"
+      - mongodb_data:/data/db
       - ./db/mongodb/init.js:/docker-entrypoint-initdb.d/init.js
     networks:
       - backend
@@ -54,9 +52,12 @@ services:
       - mongodb
 
 volumes:
-  "${PROJECT_NAME}_mariadb_data":
-  "${PROJECT_NAME}_postgresql_data":
-  "${PROJECT_NAME}_mongodb_data":
+  mariadb_data:
+    name: "${PROJECT_NAME}_mariadb_data"
+  postgresql_data:
+    name: "${PROJECT_NAME}_postgresql_data"
+  mongodb_data:
+    name: "${PROJECT_NAME}_mongodb_data"
 
 networks:
   backend:
