@@ -3,7 +3,7 @@ version: "3.9"
 services:
   mariadb:
     image: mariadb:11
-    container_name: "${PROJECT_NAME}-auth-mariadb"
+    container_name: "${PROJECT_NAME}-mariadb"
     ports:
       - "${DB_PORT}:3306"
     environment:
@@ -21,7 +21,7 @@ services:
 
   postgresql:
     image: postgres:16
-    container_name: "${PROJECT_NAME}-auth-postgresql"
+    container_name: "${PROJECT_NAME}-postgresql"
     ports:
       - "${DB_PORT}:5432"
     environment:
@@ -38,7 +38,7 @@ services:
 
   mongodb:
     image: mongo:7
-    container_name: "${PROJECT_NAME}-auth-mongodb"
+    container_name: "${PROJECT_NAME}-mongodb"
     ports:
       - "${DB_PORT}:27017"
     environment:
