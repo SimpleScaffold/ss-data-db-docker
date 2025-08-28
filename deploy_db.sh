@@ -11,8 +11,15 @@ if [ ! -f .env ]; then
     exit 1
 fi
 
-# .env에서 DB_TYPE 읽기
+# .env에서 PROJECT_NAME과 DB_TYPE 읽기
+PROJECT_NAME=$(grep PROJECT_NAME .env | cut -d '=' -f2 | tr -d '\r' | xargs)
 DB_TYPE=$(grep DB_TYPE .env | cut -d '=' -f2 | tr -d '\r' | xargs)
+
+# PROJECT_NAME이 비어있는지 확인
+if [ -z "$PROJECT_NAME" ]; then
+    echo "Error: .env 파일에서 PROJECT_NAME을 찾을 수 없습니다."
+    exit 1
+fi
 
 # DB_TYPE이 비어있는지 확인
 if [ -z "$DB_TYPE" ]; then
@@ -26,15 +33,15 @@ echo "Deploying database: $DB_TYPE"
 # DB_TYPE에 따라 컨테이너 이름 및 프로필 지정
 case "$DB_TYPE" in
   mariadb)
-    CONTAINER_NAME="ss-auth-mariadb"
+    CONTAINER_NAME="${PROJECT_NAME}-mariadb"
     PROFILE="mariadb"
     ;;
   postgresql)
-    CONTAINER_NAME="ss-auth-postgresql"
+    CONTAINER_NAME="${PROJECT_NAME}-postgresql"
     PROFILE="postgresql"
     ;;
   mongodb)
-    CONTAINER_NAME="ss-auth-mongodb"
+    CONTAINER_NAME="${PROJECT_NAME}-mongodb"
     PROFILE="mongodb"
     ;;
   *)
@@ -43,6 +50,7 @@ case "$DB_TYPE" in
     exit 1
     ;;
 esac
+
 
 # Docker가 실행 중인지 확인
 if ! docker info > /dev/null 2>&1; then
